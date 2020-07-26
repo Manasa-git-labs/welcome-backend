@@ -50,9 +50,14 @@ public class UserController {
                 .body (new LoginResponse ("Check your mail for verification!", 203, userLoginInfo));
     }
 
-    @PatchMapping("/signout")
-    public ResponseEntity<Response> signOutUser(@PathVariable("token") final String token) {
-        userService.signOutUser(token);
-        return ResponseEntity.ok (new Response ("Successfully Signed out...",200));
+    @PatchMapping("/signout/{token}")
+    public ResponseEntity<Response> signOutUser( @PathVariable("token") final String token ) {
+        userService.signOutUser (token);
+        return ResponseEntity.ok (new Response ("Successfully Signed out...", 200));
+    }
+
+    @GetMapping("/active")
+    public ResponseEntity<Response> getAllActiveUsers() {
+        return ResponseEntity.ok (new Response ("All Active users list: ", userService.getActiveUsers ()));
     }
 }

@@ -3,7 +3,6 @@ package com.amruthacollege.welcome.services;
 import com.amruthacollege.welcome.dtos.LoginDto;
 import com.amruthacollege.welcome.dtos.UserDto;
 import com.amruthacollege.welcome.exceptions.InvalidCredentialsException;
-import com.amruthacollege.welcome.exceptions.UserAuthenticationException;
 import com.amruthacollege.welcome.exceptions.UserNotFoundException;
 import com.amruthacollege.welcome.models.UserEntity;
 import com.amruthacollege.welcome.repository.UserRepository;
@@ -17,7 +16,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements IUserService {
@@ -99,7 +100,7 @@ public class UserServiceImpl implements IUserService {
     public void signOutUser( String token ) {
         Optional<UserEntity> fetchedUser = getAuthenticatedUser (token);
         fetchedUser.get ().setLogin (false);
-        userRepository.signOutUser(fetchedUser.get ().getUserName ());
+        userRepository.signOutUser (fetchedUser.get ().getUserName ());
     }
 
     /**
@@ -115,5 +116,14 @@ public class UserServiceImpl implements IUserService {
         }
         throw new UserNotFoundException (Util.USER_NOT_FOUND_EXCEPTION_MESSAGE, HttpStatus.NOT_FOUND);
     }
+
+    @Override
+    public List<UserEntity> getActiveUsers() {
+        return userRepository.findAll ()
+                .stream ()
+                .filter (fetchedUser -> fetchedUser.isLogin ())
+                .collect (Collectors.toList ());
+    }
+
 
 }

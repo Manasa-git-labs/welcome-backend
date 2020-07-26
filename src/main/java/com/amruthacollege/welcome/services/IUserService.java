@@ -4,6 +4,9 @@ import com.amruthacollege.welcome.dtos.LoginDto;
 import com.amruthacollege.welcome.dtos.UserDto;
 import com.amruthacollege.welcome.exceptions.InvalidCredentialsException;
 import com.amruthacollege.welcome.exceptions.UserNotFoundException;
+import com.amruthacollege.welcome.models.UserEntity;
+
+import java.util.List;
 
 /**
  * This interface has the UnImplemented functionality of registering the user
@@ -19,4 +22,6 @@ public interface IUserService {
     UserLoginInfo login( LoginDto loginDto ) throws UserNotFoundException, InvalidCredentialsException;
 
     void signOutUser( String token );
+
+    List<UserEntity> getActiveUsers();
 }

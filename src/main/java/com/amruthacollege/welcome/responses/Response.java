@@ -25,6 +25,11 @@ public class Response {
         this.httpStatus = httpStatus;
     }
 
+    public Response(String message, List list){
+        this(message);
+        this.list = list;
+    }
+
     public Response( String message, HttpStatus httpStatus, Object object ) {
         this( message, httpStatus);
         this.object = object;
