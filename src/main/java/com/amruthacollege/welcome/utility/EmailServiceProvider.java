@@ -3,7 +3,6 @@ package com.amruthacollege.welcome.utility;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.Properties;
-
 import javax.mail.Authenticator;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -12,7 +11,6 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-
 import com.amruthacollege.welcome.exceptions.MailSendingException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -21,10 +19,6 @@ import org.springframework.stereotype.Component;
  * This is the configuration mail class which uses SMTP authentication and runs
  * the service in the port 587 and gives the functionality of sending the mail
  * to user. RabbitMQ functionality added to the existing JMS mail service
- *
- * @author Durgasankar Mishra
- * @version 1.0
- * @created 2020-04-12
  */
 @Component
 public class EmailServiceProvider {
