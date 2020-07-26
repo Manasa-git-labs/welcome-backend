@@ -11,4 +11,6 @@ import com.amruthacollege.welcome.exceptions.UserNotFoundException;
 public interface IUserService {
 
     boolean register( UserDto newUserDto ) throws UserNotFoundException;
+
+    boolean isVerifiedUser( String token );
 }

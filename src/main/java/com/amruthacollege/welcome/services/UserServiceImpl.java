@@ -60,4 +60,10 @@ public class UserServiceImpl implements IUserService {
         return new MailObject (emailId, subject, bodyContent);
     }
 
+    @Override
+    public boolean isVerifiedUser( final String token ) {
+        userRepository.verifyTheUser (jwtTokenProvider.getUserName (token));
+        return true;
+    }
+
 }
