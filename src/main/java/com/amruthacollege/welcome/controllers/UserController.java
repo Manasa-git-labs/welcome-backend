@@ -43,10 +43,16 @@ public class UserController {
     public ResponseEntity<LoginResponse> login( @RequestBody final LoginDto loginDto ) {
         UserLoginInfo userLoginInfo = userService.login (loginDto);
         if (!userLoginInfo.getToken ().isEmpty ()) {
-            return ResponseEntity.status (HttpStatus.OK)
+            return ResponseEntity.ok ()
                     .body (new LoginResponse ("Login Successful!", 200, userLoginInfo));
         }
         return ResponseEntity.status (HttpStatus.NON_AUTHORITATIVE_INFORMATION)
                 .body (new LoginResponse ("Check your mail for verification!", 203, userLoginInfo));
+    }
+
+    @PatchMapping("/signout")
+    public ResponseEntity<Response> signOutUser(@PathVariable("token") final String token) {
+        userService.signOutUser(token);
+        return ResponseEntity.ok (new Response ("Successfully Signed out...",200));
     }
 }

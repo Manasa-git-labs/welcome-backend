@@ -3,6 +3,7 @@ package com.amruthacollege.welcome.services;
 import com.amruthacollege.welcome.dtos.LoginDto;
 import com.amruthacollege.welcome.dtos.UserDto;
 import com.amruthacollege.welcome.exceptions.InvalidCredentialsException;
+import com.amruthacollege.welcome.exceptions.UserAuthenticationException;
 import com.amruthacollege.welcome.exceptions.UserNotFoundException;
 import com.amruthacollege.welcome.models.UserEntity;
 import com.amruthacollege.welcome.repository.UserRepository;
@@ -80,7 +81,7 @@ public class UserServiceImpl implements IUserService {
                 if (fetchedUser.get ().isVerified ()) {
                     String createdToken = jwtTokenProvider.createToken (fetchedUser.get ().getUserName ());
                     fetchedUser.get ().setLogin (true);
-                    userRepository.loggedInUser(fetchedUser.get ().getUserName ());
+                    userRepository.loggedInUser (fetchedUser.get ().getUserName ());
                     return new UserLoginInfo (createdToken, fetchedUser.get ().getFirstName ());
                 }
 //                user is valid but not verified.
@@ -91,6 +92,27 @@ public class UserServiceImpl implements IUserService {
             throw new InvalidCredentialsException ("Oops...Invalid username/password supplied!", HttpStatus.UNPROCESSABLE_ENTITY);
         }
 //        not found
+        throw new UserNotFoundException (Util.USER_NOT_FOUND_EXCEPTION_MESSAGE, HttpStatus.NOT_FOUND);
+    }
+
+    @Override
+    public void signOutUser( String token ) {
+        Optional<UserEntity> fetchedUser = getAuthenticatedUser (token);
+        fetchedUser.get ().setLogin (false);
+        userRepository.signOutUser(fetchedUser.get ().getUserName ());
+    }
+
+    /**
+     * get the user from the token provided from user repository and
+     *
+     * @param token as String input parameter
+     * @return Optional<UserEntity>
+     */
+    private Optional<UserEntity> getAuthenticatedUser( final String token ) throws UserNotFoundException {
+        Optional<UserEntity> fetchedUser = userRepository.findOneByUserName (jwtTokenProvider.getUserName (token));
+        if (fetchedUser.isPresent ()) {
+            return fetchedUser;
+        }
         throw new UserNotFoundException (Util.USER_NOT_FOUND_EXCEPTION_MESSAGE, HttpStatus.NOT_FOUND);
     }
 

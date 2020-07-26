@@ -17,4 +17,6 @@ public interface IUserService {
     boolean isVerifiedUser( String token );
 
     UserLoginInfo login( LoginDto loginDto ) throws UserNotFoundException, InvalidCredentialsException;
+
+    void signOutUser( String token );
 }

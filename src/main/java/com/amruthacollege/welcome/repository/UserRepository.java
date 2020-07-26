@@ -29,4 +29,9 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     @Transactional
     @Query(value = " update users set is_login = true where user_name =  ? ", nativeQuery = true)
     void loggedInUser( final String userName );
+
+    @Modifying
+    @Transactional
+    @Query(value = " update users set is_login = false where user_name =  ? ", nativeQuery = true)
+    void signOutUser( String userName );
 }
