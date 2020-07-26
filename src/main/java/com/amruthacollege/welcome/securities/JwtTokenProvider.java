@@ -8,6 +8,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+
 import java.util.Date;
 
 /**
@@ -21,9 +22,8 @@ import java.util.Date;
 @Component
 public class JwtTokenProvider {
 
-    public String createToken( String userName, String role ) {
+    public String createToken( String userName ) {
         Claims claims = Jwts.claims ().setSubject (userName);
-        claims.put ("auth", role);
         Date currentDate = new Date ();
         Date validity = new Date (currentDate.getTime () + Util.VALIDITY_PERIOD_IN_MILLISECOND);
         return Jwts.builder ()

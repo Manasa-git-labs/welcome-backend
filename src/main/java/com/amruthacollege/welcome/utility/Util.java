@@ -21,6 +21,7 @@ public class Util {
     public static final String SPRING_PORT_NUMBER = "8081";
     public static final String REGISTRATION_VERIFICATION_LINK = "/verification";
     public static final String REGISTRATION_EMAIL_SUBJECT = "Registration Verification Link";
+    public static final String USER_NOT_FOUND_EXCEPTION_MESSAGE = "Oops...User not found!";
 //    token info
     public static final String SECRET_KEY = "welcome$20200726IVProject";
     public static final long VALIDITY_PERIOD_IN_MILLISECOND = 24 * 60 * 60 * 1000;// 1 day

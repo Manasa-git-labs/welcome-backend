@@ -1,18 +1,9 @@
 package com.amruthacollege.welcome.utility;
 
-import java.io.UnsupportedEncodingException;
-import java.util.Date;
-import java.util.Properties;
-import javax.mail.Authenticator;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-import com.amruthacollege.welcome.exceptions.MailSendingException;
-import org.springframework.http.HttpStatus;
+import com.amruthacollege.welcome.responses.MailObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 
 /**
@@ -23,73 +14,15 @@ import org.springframework.stereotype.Component;
 @Component
 public class EmailServiceProvider {
 
-    /**
-     * This function takes following input parameter and configure the
-     * authentication of SMTP and port 587 and authorization and send the mail to
-     * the assigned user details.
-     *
-     * @param toEmailId   Sender's id
-     * @param subject     subject of mail
-     * @param bodyContain body contains of mail
-     */
-    public boolean sendMail( String toEmailId, String subject, String bodyContain ) {
-        Authenticator authentication = new Authenticator () {
+    @Autowired
+    private JavaMailSender javaMailSender;
 
-            @Override
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication (Util.SENDER_EMAIL_ID, Util.SENDER_PASSWORD);
-            }
-        };
-        Session session = Session.getInstance (mailPropertiesSettings (), authentication);
-        try {
-            Transport.send (mimeMessageConfiguration (session, toEmailId, subject, bodyContain));
-            return true;
-        } catch (MessagingException e) {
-            throw new MailSendingException ("Oops...Error Sending mail to Server!", HttpStatus.BAD_GATEWAY);
-        }
-    }
 
-    /**
-     * This function takes following information and sets all the header information
-     * of the email.
-     *
-     * @param session as Current session information
-     * @param toEmail as String receiver's mail id
-     * @param subject as String input parameter
-     * @param body    as String input parameter
-     * @return MimeMessage
-     */
-    private MimeMessage mimeMessageConfiguration( Session session, String toEmail, String subject, String body ) {
-
-        MimeMessage mimeMessage = new MimeMessage (session);
-        // set message headers
-        try {
-            mimeMessage.addHeader ("Content-type", "text/HTML; charset=UTF-8");
-            mimeMessage.addHeader ("format", "flowed");
-            mimeMessage.addHeader ("Content-Transfer-Encoding", "8bit");
-            mimeMessage.setFrom (new InternetAddress (Util.SENDER_EMAIL_ID, "Book Store Application"));
-            mimeMessage.setReplyTo (InternetAddress.parse (Util.SENDER_EMAIL_ID, false));
-            mimeMessage.setSubject (subject, "UTF-8");
-            mimeMessage.setText (body, "UTF-8");
-            mimeMessage.setSentDate (new Date ());
-            mimeMessage.setRecipients (Message.RecipientType.TO, InternetAddress.parse (toEmail, false));
-        } catch (MessagingException | UnsupportedEncodingException e) {
-            e.printStackTrace ();
-        }
-        return mimeMessage;
-    }
-
-    /**
-     * This class sets the properties configuration of the mail and return it.
-     *
-     * @return Properties class
-     */
-    private Properties mailPropertiesSettings() {
-        Properties properties = new Properties ();
-        properties.put ("mail.smtp.host", "smtp.gmail.com"); // SMTP Host
-        properties.put ("mail.smtp.port", "587"); // TLS Port
-        properties.put ("mail.smtp.auth", "true"); // enable authentication
-        properties.put ("mail.smtp.starttls.enable", "true"); // enable STARTTLS
-        return properties;
+    public void sendMail( MailObject mailObject ) {
+        SimpleMailMessage mail = new SimpleMailMessage ();
+        mail.setTo (mailObject.getEmail ());
+        mail.setSubject (mailObject.getSubject ());
+        mail.setText (mailObject.getMessage ());
+        javaMailSender.send (mail);
     }
 }
