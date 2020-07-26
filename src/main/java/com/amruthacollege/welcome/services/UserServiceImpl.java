@@ -1,6 +1,8 @@
 package com.amruthacollege.welcome.services;
 
+import com.amruthacollege.welcome.dtos.LoginDto;
 import com.amruthacollege.welcome.dtos.UserDto;
+import com.amruthacollege.welcome.exceptions.InvalidCredentialsException;
 import com.amruthacollege.welcome.exceptions.UserNotFoundException;
 import com.amruthacollege.welcome.models.UserEntity;
 import com.amruthacollege.welcome.repository.UserRepository;
@@ -64,6 +66,32 @@ public class UserServiceImpl implements IUserService {
     public boolean isVerifiedUser( final String token ) {
         userRepository.verifyTheUser (jwtTokenProvider.getUserName (token));
         return true;
+    }
+
+    @Override
+    public UserLoginInfo login( LoginDto loginDto ) throws UserNotFoundException, InvalidCredentialsException {
+        /*login operation after disabling spring security*/
+        Optional<UserEntity> fetchedUser = userRepository.findOneByUserName (loginDto.getUserName ());
+//        fetched user present
+        if (fetchedUser.isPresent ()) {
+//            password matches
+            if (passwordEncoder.matches (loginDto.getPassword (), fetchedUser.get ().getPassword ())) {
+//                verified
+                if (fetchedUser.get ().isVerified ()) {
+                    String createdToken = jwtTokenProvider.createToken (fetchedUser.get ().getUserName ());
+                    fetchedUser.get ().setLogin (true);
+                    userRepository.loggedInUser(fetchedUser.get ().getUserName ());
+                    return new UserLoginInfo (createdToken, fetchedUser.get ().getFirstName ());
+                }
+//                user is valid but not verified.
+                emailServiceProvider.sendMail (mailContent (fetchedUser.get ()));
+                return new UserLoginInfo ("", fetchedUser.get ().getFirstName ());
+            }
+//            password dint match
+            throw new InvalidCredentialsException ("Oops...Invalid username/password supplied!", HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+//        not found
+        throw new UserNotFoundException (Util.USER_NOT_FOUND_EXCEPTION_MESSAGE, HttpStatus.NOT_FOUND);
     }
 
 }

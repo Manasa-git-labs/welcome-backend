@@ -1,6 +1,8 @@
 package com.amruthacollege.welcome.services;
 
+import com.amruthacollege.welcome.dtos.LoginDto;
 import com.amruthacollege.welcome.dtos.UserDto;
+import com.amruthacollege.welcome.exceptions.InvalidCredentialsException;
 import com.amruthacollege.welcome.exceptions.UserNotFoundException;
 
 /**
@@ -13,4 +15,6 @@ public interface IUserService {
     boolean register( UserDto newUserDto ) throws UserNotFoundException;
 
     boolean isVerifiedUser( String token );
+
+    UserLoginInfo login( LoginDto loginDto ) throws UserNotFoundException, InvalidCredentialsException;
 }

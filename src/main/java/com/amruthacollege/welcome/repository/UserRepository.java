@@ -25,4 +25,8 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     void verifyTheUser( final String userName );
 
 
+    @Modifying
+    @Transactional
+    @Query(value = " update users set is_login = true where user_name =  ? ", nativeQuery = true)
+    void loggedInUser( final String userName );
 }

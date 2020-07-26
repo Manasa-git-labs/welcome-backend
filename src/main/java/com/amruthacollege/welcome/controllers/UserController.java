@@ -1,8 +1,11 @@
 package com.amruthacollege.welcome.controllers;
 
+import com.amruthacollege.welcome.dtos.LoginDto;
 import com.amruthacollege.welcome.dtos.UserDto;
+import com.amruthacollege.welcome.responses.LoginResponse;
 import com.amruthacollege.welcome.responses.Response;
 import com.amruthacollege.welcome.services.IUserService;
+import com.amruthacollege.welcome.services.UserLoginInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,5 +37,16 @@ public class UserController {
         }
         return ResponseEntity.status (HttpStatus.NOT_ACCEPTABLE)
                 .body (new Response ("Invalid verification attempt", 406));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> login( @RequestBody final LoginDto loginDto ) {
+        UserLoginInfo userLoginInfo = userService.login (loginDto);
+        if (!userLoginInfo.getToken ().isEmpty ()) {
+            return ResponseEntity.status (HttpStatus.OK)
+                    .body (new LoginResponse ("Login Successful!", 200, userLoginInfo));
+        }
+        return ResponseEntity.status (HttpStatus.NON_AUTHORITATIVE_INFORMATION)
+                .body (new LoginResponse ("Check your mail for verification!", 203, userLoginInfo));
     }
 }
